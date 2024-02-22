@@ -15,8 +15,9 @@ process.on('uncaughtException', (err) => {
 
 connectDatabase()
 const Items = require('./Route/ItemsRoute')
+const Users = require('./Route/UsersRoute')
 app.use('/api/v1', Items)
-
+app.use('/api/v2', Users)
 app.use(errors)
 
 const server = app.listen(5000, () => {

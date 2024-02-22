@@ -1,9 +1,9 @@
-const catchAsyncErrors = require('../middleware/catchAsyncError')
+const asyncHandler = require('express-async-handler')
 const User = require('../Model/UserModel')
 const ErrorHandler = require('../utils/errorHandler')
 const sendToken = require('../utils/jwtToken')
 
-const registerUser = async (req, res, next) => {
+const registerUser = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body
 
   const user = await User.create({
@@ -22,9 +22,9 @@ const registerUser = async (req, res, next) => {
     token,
     user,
   })
-}
+})
 
-const loginUser = async (req, res, next) => {
+const loginUser = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body
 
   // checking if user has given password and email both}
@@ -50,7 +50,7 @@ const loginUser = async (req, res, next) => {
     token,
     user,
   })
-}
+})
 
 module.exports = {
   registerUser,

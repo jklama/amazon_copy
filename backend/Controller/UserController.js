@@ -1,7 +1,7 @@
 const asyncHandler = require('express-async-handler')
 const User = require('../Model/UserModel')
 const ErrorHandler = require('../utils/errorHandler')
-const sendToken = require('../utils/jwtToken')
+// const sendToken = require('../utils/jwtToken')
 
 const registerUser = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body
@@ -15,9 +15,17 @@ const registerUser = asyncHandler(async (req, res, next) => {
       url: 'profilepicUrl',
     },
   })
-  const token = user.getJWTToken()
+  const token = user.getJwtToken()
 
-  res.status(201).json({
+  // options for cookie
+  const options = {
+    expires: new Date(
+      Date.now() + process.env.COOKIE_EXPIRES_TIME * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  }
+
+  res.status(statusCode).cookie('token', token, options).json({
     success: true,
     token,
     user,
@@ -43,9 +51,17 @@ const loginUser = asyncHandler(async (req, res, next) => {
     return next(new ErrorHandler('Invalid email or password', 401))
   }
 
-  const token = user.getJWTToken()
+  const token = user.getJwtToken()
 
-  res.status(201).json({
+  // options for cookie
+  const options = {
+    expires: new Date(
+      Date.now() + process.env.COOKIE_EXPIRES_TIME * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  }
+
+  res.status(statusCode).cookie('token', token, options).json({
     success: true,
     token,
     user,

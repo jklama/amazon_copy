@@ -9,7 +9,7 @@ const {
   deleteItem,
 } = require('../Controller/ItemsController')
 
-router.route('/Items').get(allItems)
+router.route('/Items').get(isAuthenticated, allItems)
 router.route('/Items/new').post(newItems)
 router.route('/Items/:id').get(singleItem)
 router.route('/Items/:id').put(updateItem)

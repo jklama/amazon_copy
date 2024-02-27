@@ -5,7 +5,7 @@ const cookieParser = require('cookie-parser')
 const connectDatabase = require('./config/database')
 const errors = require('./middleware/error')
 app.use(express.json())
-// app.use(cookieParser())
+app.use(cookieParser())
 // Handling Uncaught Exception
 process.on('uncaughtException', (err) => {
   console.log(`Error: ${err.message}`)

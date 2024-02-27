@@ -3,10 +3,10 @@ const catchAsyncErrors = require('../middleware/catchAsyncError')
 const ErrorHandler = require('../utils/errorHandler')
 const ApiFilters = require('../utils/apiFilters')
 
-const allItems = catchAsyncErrors(async (req, res) => {
+const allItems = async (req, res) => {
   const resPerPage = 4
   const apiFilters = new ApiFilters(Item, req.query).search().filter()
-
+  console.log('req?.user', req?.user)
   let items = await apiFilters.query
   let filterItemsCount = items.Length
 
@@ -24,17 +24,17 @@ const allItems = catchAsyncErrors(async (req, res) => {
     filterItemsCount,
     items,
   })
-})
+}
 
-const newItems = catchAsyncErrors(async (req, res) => {
+const newItems = async (req, res) => {
   const items = await Item.create(req.body)
   res.status(201).json({
     success: true,
     items,
   })
-})
+}
 
-const singleItem = catchAsyncErrors(async (req, res, next) => {
+const singleItem = async (req, res, next) => {
   const item = await Item.findById(req.params.id)
   if (!item) {
     return next(new ErrorHandler('product not found', 404))
@@ -44,9 +44,9 @@ const singleItem = catchAsyncErrors(async (req, res, next) => {
       item,
     })
   }
-})
+}
 
-const updateItem = catchAsyncErrors(async (req, res, next) => {
+const updateItem = async (req, res, next) => {
   let item = await Item.findById(req.params.id)
   if (!item) {
     return next(new ErrorHandler('product not found', 404))
@@ -60,9 +60,9 @@ const updateItem = catchAsyncErrors(async (req, res, next) => {
     success: true,
     item,
   })
-})
+}
 
-const deleteItem = catchAsyncErrors(async (req, res) => {
+const deleteItem = async (req, res) => {
   const item = await Item.findByIdAndDelete(req.params.id)
   if (!item) {
     return res.status(404).json({
@@ -75,6 +75,6 @@ const deleteItem = catchAsyncErrors(async (req, res) => {
       message: 'Item deleted successfully',
     })
   }
-})
+}
 
 module.exports = { allItems, newItems, singleItem, updateItem, deleteItem }

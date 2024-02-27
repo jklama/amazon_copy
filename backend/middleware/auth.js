@@ -17,4 +17,20 @@ const isAuthenticated = async (req, res, next) => {
   next()
 }
 
-module.exports = { isAuthenticated }
+//TODO: authorized roles to authorize roles and only let the authorized person be able to see the info
+
+const authorizeRoles = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new ErrorHandler(
+          `Role (${req.user.role}) is not allowed to access this resource`,
+          401
+        )
+      )
+    }
+    next()
+  }
+}
+
+module.exports = { isAuthenticated, authorizeRoles }

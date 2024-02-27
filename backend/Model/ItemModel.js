@@ -101,7 +101,7 @@
 // module.exports = mongoose.model('Item', ItemSchema)
 
 const mongoose = require('mongoose')
-
+const User = require('./UserModel')
 const ItemSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -192,6 +192,11 @@ const ItemSchema = new mongoose.Schema({
       },
     },
   ],
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'User',
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

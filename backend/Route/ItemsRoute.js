@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { isAuthenticated } = require('../middleware/auth')
+const { isAuthenticated, authorizeRoles } = require('../middleware/auth')
 const {
   allItems,
   newItems,
@@ -9,9 +9,15 @@ const {
   deleteItem,
 } = require('../Controller/ItemsController')
 
-router.route('/Items').get(isAuthenticated, allItems)
-router.route('/Items/new').post(newItems)
+router.route('/Items').get(allItems)
+router
+  .route('/Items/new')
+  .post(isAuthenticated, authorizeRoles('admin'), newItems)
 router.route('/Items/:id').get(singleItem)
-router.route('/Items/:id').put(updateItem)
-router.route('/Items/:id').delete(deleteItem)
+router
+  .route('/Items/:id')
+  .put(isAuthenticated, authorizeRoles('admin'), updateItem)
+router
+  .route('/Items/:id')
+  .delete(isAuthenticated, authorizeRoles('admin'), deleteItem)
 module.exports = router

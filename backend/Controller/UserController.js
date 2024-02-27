@@ -15,18 +15,14 @@ const registerUser = asyncHandler(async (req, res, next) => {
       url: 'profilepicUrl',
     },
   })
-  const token = user.getJwtToken()
-  console.log(token)
-  // options for cookie
+  const token = user.getJWTToken()
 
-  res.status(201).json({
-    success: true,
-    token,
+  res.status(200).json({
     user,
   })
 })
 
-const loginUser = asyncHandler(async (req, res, next) => {
+const loginUser = async (req, res, next) => {
   const { email, password } = req.body
 
   // checking if user has given password and email both}
@@ -45,7 +41,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
     return next(new ErrorHandler('Invalid email or password', 401))
   }
 
-  const token = user.getJwtToken()
+  const token = user.getJWTToken()
 
   // options for cookie
   const options = {
@@ -55,12 +51,12 @@ const loginUser = asyncHandler(async (req, res, next) => {
     httpOnly: true,
   }
 
-  res.status(statusCode).cookie('token', token, options).json({
+  res.status(201).cookie('token', token, options).json({
     success: true,
     token,
     user,
   })
-})
+}
 
 module.exports = {
   registerUser,

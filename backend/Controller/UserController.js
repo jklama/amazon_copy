@@ -2,6 +2,8 @@ const asyncHandler = require('express-async-handler')
 const User = require('../Model/UserModel')
 const ErrorHandler = require('../utils/errorHandler')
 const sendToken = require('../utils/jwtToken')
+const sendEmail = require('../utils/sendEmail')
+const getResetPasswordTemplate = require('../utils/emailTemplates')
 
 const registerUser = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body
@@ -68,8 +70,47 @@ const logout = async (req, res, next) => {
   })
 }
 
+//forgot password => /api/v2/users/password/forgot
+const forgotPassword = async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email })
+
+  if (!user) {
+    return next(new ErrorHandler('Invalid email or password', 401))
+  }
+
+  //get reset password token
+  const resetToken = user.getResetPasswordToken()
+  await user.save()
+
+  const resetUrl = `${process.env.FRONTEND_URL}/api/v2/users/password/reset/${resetToken}`
+
+  const message = getResetPasswordTemplate(user?.name, resetUrl)
+  console.log('Reset URL:', resetUrl)
+  try {
+    console.log('Sending email...')
+    await sendEmail({
+      email: user.email,
+      subject: `shopIt Password Recovery`,
+      message,
+    })
+    console.log('Email sent successfully')
+    res.status(200).json({
+      success: true,
+      message: `Email sent to ${user.email} successfully`,
+    })
+  } catch (error) {
+    console.error('error: ', error)
+    user.resetPasswordToken = undefined
+    user.resetPasswordExpire = undefined
+
+    await user.save({ validateBeforeSave: false })
+    return next(new ErrorHandler(error.message, 500))
+  }
+}
+
 module.exports = {
   registerUser,
   loginUser,
   logout,
+  forgotPassword,
 }

@@ -27,7 +27,8 @@ const allItems = async (req, res) => {
 }
 
 const newItems = async (req, res) => {
-  req.body.user = req.user.id
+  //using the req.user._id from previous Mail
+  req.body.user = req.user._id
 
   const items = await Item.create(req.body)
   res.status(201).json({

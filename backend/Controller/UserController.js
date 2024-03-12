@@ -108,9 +108,39 @@ const forgotPassword = async (req, res, next) => {
   }
 }
 
+//get current user profile => /api/v2/users/me
+// TODO: Not working currently
+const getUserProfile = async (req, res, next) => {
+  const user = await User.findById(req?.user?._id)
+  console.log(user)
+  res.status(200).json({
+    user,
+  })
+}
+
+//UPdate password => /api/v2/users/password/update
+// TODO: NOt working this too
+const updatePassword = async (req, res, next) => {
+  const user = await User.findById(req?.user?._id).select('+password')
+  const oldPassword = req.body
+  const isMatched = await user.comparePassword(oldPassword)
+
+  if (!isMatched) {
+    return next(new ErrorHandler('Old password is incorrect', 400))
+  }
+
+  user.password = req.body.password
+  user.save()
+  res.status(200).json({
+    success: true,
+  })
+}
+
 module.exports = {
   registerUser,
   loginUser,
   logout,
   forgotPassword,
+  getUserProfile,
+  updatePassword,
 }

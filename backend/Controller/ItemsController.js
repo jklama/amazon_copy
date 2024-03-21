@@ -117,9 +117,46 @@ const createItemReview = async (req, res) => {
     review,
   })   
 
-
-// Get Product Reviews => /api/v1/products/:id/reviews
-
 }
+// Get Items Reviews => /api/v1/reviews
+  const getItemReviews = async(req,res) =>{
+  const item = await Item.findById(req.query.id)
+  if(!item){
+    return res.status(404).json({
+      success:false,
+      message:'Item not found'
+    })
+  }
+  const reviews = item.reviews 
+  res.status(200).json({
+    success:true,
+    reviews
+  })
+  }
 
-module.exports = { allItems, newItems, singleItem, updateItem, deleteItem, createItemReview }
+
+  // Delete Item Review => /api/v1/admin/reviews
+  const deleteReview = async (req, res) => {
+  
+    const item = await Item.findById(req.query.productId)
+    if (!item) {
+      return res.status(404).json({
+        success: false,
+        message: 'Item not found',
+      })
+    }
+     item.isReviewed = item?.reviews?.filter(
+      (r) => r._id.toString() !== req?.query?._id.toString()
+    )
+    item.numOfReviews = item.isReviewed.length;
+    
+   item.ratings = item.reviews.reduce((acc,product) => product.rating + acc, 0) / item.isReviewed.length;
+  
+   await item.save({  validateBeforeSave: false})
+    res.status(200).json({
+      success: true,   
+      
+    })   
+  
+  }
+module.exports = { allItems, newItems, singleItem, updateItem, deleteItem, createItemReview , getItemReviews ,deleteReview}

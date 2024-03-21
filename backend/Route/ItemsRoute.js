@@ -7,6 +7,7 @@ const {
   singleItem,
   updateItem,
   deleteItem,
+  createItemReview
 } = require('../Controller/ItemsController')
 
 router.route('/Items').get(allItems)
@@ -20,4 +21,5 @@ router
 router
   .route('/Items/:id')
   .delete(isAuthenticated, authorizeRoles('admin'), deleteItem)
+router.route('/reviews').put(createItemReview)
 module.exports = router

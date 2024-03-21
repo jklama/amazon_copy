@@ -58,10 +58,17 @@ const myOrders = async (req, res, next) => {
   })
 }
 
-
-//get all order - admin => /api/v3/admin/orders
-
+//get all orders - admin => /api/v3/admin/orders
 const allOrders = async(req,res,next) =>{
+  const orders = await Order.find();
+  res.status(200).json({
+    orders,
+  })
+}
+
+//update order - admin => /api/v3/admin/orders/update
+
+const updateOrders = async(req,res,next) =>{
   const orders = await Order.findById(req.params.id);
   if(!orders) {
     return next(new ErrorHandler('No orders found', 404))
@@ -69,6 +76,8 @@ const allOrders = async(req,res,next) =>{
   if(order?.orderStatus === 'Delivered') {
     return next(new ErrorHandler('You have already delivered this order', 400))
   } 
+  
+  //Update item stock
   order?.orderItems?.forEach(async(product)=>{
     const item = await Items.findById(product?.item?.toString())
     if(!item){
@@ -86,4 +95,18 @@ const allOrders = async(req,res,next) =>{
   })  
 }
 
-module.exports = {newOrder, getOrderDetails, myOrders, allOrders}
+//delete order - admin => /api/v3/admin/orders/delete
+
+const deleteOrders = async(req,res,next) =>{
+  const order = await Order.findById(req.params.id);
+  if(!order) {
+    return next(new ErrorHandler('No orders found', 404))
+  }
+  await order.deleteOne()
+  res.status(200).json({
+    success: true,
+    message: 'Order deleted successfully'
+  })
+}
+
+module.exports = {newOrder, getOrderDetails, myOrders, allOrders, updateOrders, deleteOrders}

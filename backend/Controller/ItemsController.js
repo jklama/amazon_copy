@@ -80,4 +80,46 @@ const deleteItem = async (req, res) => {
   }
 }
 
-module.exports = { allItems, newItems, singleItem, updateItem, deleteItem }
+// Create/Update Item => /api/v1/products/:id
+const createItemReview = async (req, res) => {
+  const { rating,comment,productId} = req.body
+  const review = {
+    user: req?.user?._id,
+    rating: Number(rating),
+    comment,
+  }
+  const item = await Item.findById(productId)
+  if (!item) {
+    return res.status(404).json({
+      success: false,
+      message: 'Item not found',
+    })
+  }
+  const isReviewed = item?.reviews?.find(
+    (r) => r.user.toString() === req?.user?._id.toString()
+  )
+  if (isReviewed) {
+    item.reviews.forEach((review) => {
+      if (review.user.toString() === req?.user?._id.toString()) {
+        review.rating = rating
+        review.comment = comment
+      }
+    })
+  } else {
+    item.reviews.push(review)
+    item.numOfReviews = item.reviews.length
+  }
+ item.ratings = item.reviews.reduce((acc,product) => product.rating + acc, 0) / item.reviews.length;
+
+ await item.save({  validateBeforeSave: false})
+  res.status(200).json({
+    success: true,   
+    review,
+  })   
+
+
+// Get Product Reviews => /api/v1/products/:id/reviews
+
+}
+
+module.exports = { allItems, newItems, singleItem, updateItem, deleteItem, createItemReview }

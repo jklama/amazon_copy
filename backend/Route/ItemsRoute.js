@@ -1,6 +1,6 @@
-const express = require('express')
-const router = express.Router()
-const { isAuthenticated, authorizeRoles } = require('../middleware/auth')
+const express = require("express");
+const router = express.Router();
+const { isAuthenticated, authorizeRoles } = require("../middleware/auth");
 const {
   allItems,
   newItems,
@@ -9,21 +9,21 @@ const {
   deleteItem,
   createItemReview,
   getItemReviews,
-  deleteReview
-} = require('../Controller/ItemsController')
+  deleteReview,
+} = require("../Controller/ItemsController");
 
-router.route('/Items').get(allItems)
+router.route("/Items").get(allItems);
 router
-  .route('/Items/new')
-  .post(isAuthenticated, authorizeRoles('admin'), newItems)
-router.route('/Items/:id').get(singleItem)
+  .route("/Items/new")
+  .post(isAuthenticated, authorizeRoles("admin"), newItems);
+router.route("/Items/:id").get(singleItem);
 router
-  .route('/Items/:id')
-  .put(isAuthenticated, authorizeRoles('admin'), updateItem)
+  .route("/Items/:id")
+  .put(isAuthenticated, authorizeRoles("admin"), updateItem);
 router
-  .route('/Items/:id')
-  .delete(isAuthenticated, authorizeRoles('admin'), deleteItem)
-router.route('/reviews').put(createItemReview)
-router.route('/reviews').get(getItemReviews)
-router.route("/admin/reviews").delete(isAuthenticated, authorizeRoles('admin'), deleteReview)
-module.exports = router
+  .route("/Items/:id")
+  .delete(isAuthenticated, authorizeRoles("admin"), deleteItem);
+router.route("/reviews").put(createItemReview);
+router.route("/reviews").get(getItemReviews);
+router.route("/admin/reviews").delete(deleteReview);
+module.exports = router;
